@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kirana Stock – Digital Inventory</title>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF2EE;--sf:#fff;--ink:#12261C;--mute:#5B6B62;--line:#D3DDD6;--brand:#1F3FA8;--bi:#fff;--warn:#F2B01E;--bad:#C8372D;--badbg:#FBE9E7;--ok:#1E7A4A;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1913;--sf:#17241C;--ink:#EAF2EC;--mute:#9DB0A4;--line:#2A3B31;--brand:#8FA5F7;--bi:#0B1330;--badbg:#3A1D1A;--bad:#FF8A7E;--ok:#5BD08F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1913;--sf:#17241C;--ink:#EAF2EC;--mute:#9DB0A4;--line:#2A3B31;--brand:#8FA5F7;--bi:#0B1330;--badbg:#3A1D1A;--bad:#FF8A7E;--ok:#5BD08F;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Mukta",system-ui,sans-serif;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 96px}
+header{display:flex;align-items:center;gap:8px;padding:14px 0 10px}
+header h1{flex:1;margin:0;font-size:22px;font-weight:800;letter-spacing:-.01em}
+header h1 small{display:block;font-size:13px;font-weight:400;color:var(--mute)}
+.chip{border:1px solid var(--line);background:var(--sf);border-radius:999px;padding:4px 12px;font-size:14px}
+.btn{border:0;background:var(--brand);color:var(--bi);border-radius:10px;padding:10px 16px;font-weight:600}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 18px}
+.stat{background:var(--sf);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:28px;line-height:1.1;font-weight:800}
+.stat span{font-size:13px;color:var(--mute)}
+.stat.low b{color:#B07A00}.stat.out b{color:var(--bad)}
+h2{font-size:17px;margin:18px 0 8px;font-weight:800}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:12px}
+.row{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .nm{font-weight:600}
+.row .sub{font-size:13px;color:var(--mute)}
+.row .q{text-align:right;font-weight:800;font-size:20px}
+.row .q small{font-weight:400;font-size:13px;color:var(--mute)}
+.meter{grid-column:1/-1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok)}
+.low .meter i{background:var(--warn)}.out .meter i{background:var(--bad)}
+.acts{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:12px;font-weight:600;border-radius:6px;padding:1px 8px;background:var(--badbg);color:var(--bad)}
+.low .tag{background:#FFF2CC;color:#7A5600}
+.alerts .row{background:var(--badbg)}
+.empty{padding:22px 14px;text-align:center;color:var(--mute)}
+.bar{display:flex;gap:8px;margin-bottom:10px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sf)}
+label{display:block;font-size:14px;font-weight:600;margin:10px 0 4px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--sf);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;max-width:240px;border:0;background:none;padding:14px 6px;font-weight:600;color:var(--mute);border-top:3px solid transparent}
+nav button[aria-current="page"]{color:var(--brand);border-top-color:var(--brand)}
+dialog{border:0;border-radius:16px;padding:18px;width:min(92vw,420px);background:var(--sf);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h3{margin:0 0 4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.seg button{padding:10px;border-radius:10px;border:2px solid var(--line);background:none;font-weight:600}
+.seg button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand);color:var(--bi)}
+.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin-top:6px}
+#login{max-width:340px;margin:12vh auto 0;padding:0 16px;text-align:center}
+#login h1{font-size:30px;font-weight:800;margin:0 0 4px}
+#login p{color:var(--mute);margin:0 0 18px}
+#pin{text-align:center;font-size:28px;letter-spacing:.5em;padding:12px}
+.tx-in{color:var(--ok)}.tx-out{color:var(--bad)}
+.link{background:none;border:0;color:var(--mute);text-decoration:underline;font-size:13px;margin-top:20px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<dialog id="pd"><h3 id="pdt"></h3>
+  <label for="pn" data-t="name"></label><input id="pn" maxlength="60">
+  <div class="two"><div><label for="pc" data-t="cat"></label><select id="pc"><option>Grocery</option><option>Beverages</option><option>Snacks</option><option>Toiletries</option><option>Household</option></select></div>
+  <div><label for="pu" data-t="unit"></label><select id="pu"><option>Packet</option><option>kg</option><option>Litre</option><option>Piece</option><option>Bottle</option></select></div></div>
+  <div class="two"><div><label for="pq" data-t="qty"></label><input id="pq" type="number" inputmode="numeric" min="0"></div>
+  <div><label for="pr" data-t="rl"></label><input id="pr" type="number" inputmode="numeric" min="0"></div></div>
+  <div class="err" id="pe"></div>
+  <div class="foot"><button class="btn alt" data-close data-t="cancel"></button><button class="btn" id="ps" data-t="save"></button></div>
+</dialog>
+
+<dialog id="sd"><h3 id="sdt"></h3><div class="sub" id="sds" style="color:var(--mute)"></div>
+  <div class="seg"><button id="bin" aria-pressed="true" data-t="in"></button><button id="bout" aria-pressed="false" data-t="outb"></button></div>
+  <label for="sq" data-t="qty"></label><input id="sq" type="number" inputmode="numeric" min="1">
+  <div class="err" id="se"></div>
+  <div class="foot"><button class="btn alt" data-close data-t="cancel"></button><button class="btn" id="ss" data-t="save"></button></div>
+</dialog>
+
+<script>
+const D={
+dash:["Dashboard","डैशबोर्ड"],prods:["Products","सामान"],hist:["History","इतिहास"],
+total:["Products","कुल सामान"],low:["Low stock","कम स्टॉक"],out:["Out of stock","खत्म"],
+reorder:["Order these soon","जल्द मंगाएं"],ok:["All items are well stocked.","सारा सामान पर्याप्त है।"],
+recent:["Recent entries","हाल की एंट्री"],add:["Add product","सामान जोड़ें"],edit:["Edit product","सामान बदलें"],
+name:["Product name","सामान का नाम"],cat:["Category","श्रेणी"],unit:["Unit","इकाई"],qty:["Quantity","मात्रा"],
+rl:["Reorder level","रीऑर्डर सीमा"],save:["Save","सेव करें"],cancel:["Cancel","रद्द करें"],
+in:["Stock in (received)","माल आया"],outb:["Stock out (sold)","माल गया"],search:["Search products","सामान खोजें"],
+login:["Log in","लॉग इन"],setpin:["Set a 4-digit PIN to protect your store data.","अपने स्टोर के डेटा के लिए 4 अंकों का PIN बनाएं।"],
+enterpin:["Enter your PIN.","अपना PIN डालें।"],wrong:["Wrong PIN. Try again.","गलत PIN। फिर कोशिश करें।"],
+badpin:["PIN must be 4 digits.","PIN 4 अंकों का होना चाहिए।"],logout:["Log out","लॉग आउट"],
+editb:["Edit","बदलें"],del:["Delete","हटाएं"],left:["left","बचा"],
+empty:["No products yet. Add your first product.","अभी कोई सामान नहीं। पहला सामान जोड़ें।"],
+nohist:["No entries yet. Record stock in or out from Products.","अभी कोई एंट्री नहीं। सामान टैब से माल आया/गया दर्ज करें।"],
+notenough:["Not enough stock. Available:","स्टॉक कम है। उपलब्ध:"],needname:["Enter a product name.","सामान का नाम लिखें।"],
+needqty:["Enter a quantity above 0.","0 से ज़्यादा मात्रा डालें।"],needlvl:["Enter valid quantity and reorder level.","सही मात्रा और सीमा डालें।"],
+cdel:["Delete this product and keep its history?","इस सामान को हटाएं? इसका इतिहास बना रहेगा।"],
+reset:["Reset all data","सारा डेटा मिटाएं"],creset:["Erase all products and history on this device?","इस डिवाइस से सारा सामान और इतिहास मिटाएं?"],
+store:["My Kirana Store","मेरी किराना दुकान"],now:["now","अभी"]
+};
+const K="kirana_inv_v1",P="kirana_pin_v1",L="kirana_lang_v1";
+const rd=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const seed=()=>({products:[
+{id:1,name:"Parle-G Biscuit",cat:"Snacks",unit:"Packet",qty:46,reorder:20},
+{id:2,name:"Maggi Noodles",cat:"Snacks",unit:"Packet",qty:9,reorder:15},
+{id:3,name:"Tata Salt 1 kg",cat:"Grocery",unit:"Packet",qty:0,reorder:10},
+{id:4,name:"Amul Milk 500 ml",cat:"Beverages",unit:"Packet",qty:22,reorder:12},
+{id:5,name:"Toor Dal",cat:"Grocery",unit:"kg",qty:14,reorder:8},
+{id:6,name:"Colgate Toothpaste",cat:"Toiletries",unit:"Piece",qty:6,reorder:6},
+{id:7,name:"Surf Excel 1 kg",cat:"Household",unit:"Packet",qty:18,reorder:6}],tx:[],next:8});
+let S=rd(K,null)||seed(),lang=rd(L,0),pin=rd(P,null),authed=false,tab="dash",q="",editId=null,stockId=null,stockType="in";
+const save=()=>wr(K,S);
+const t=k=>D[k][lang];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const st=p=>p.qty<=0?"out":p.qty<=p.reorder?"low":"ok";
+const fmt=ts=>new Date(ts).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const $=s=>document.querySelector(s);
+
+function row(p,acts){
+  const s=st(p),w=Math.min(100,Math.round(p.qty/((p.reorder*2)||1)*100));
+  return `<div class="row ${s}"><div><div class="nm">${esc(p.name)} ${s!=="ok"?`<span class="tag">${t(s)}</span>`:""}</div><div class="sub">${esc(p.cat)} · ${t("rl")} ${p.reorder}</div></div>
+  <div class="q">${p.qty} <small>${esc(p.unit)} ${t("left")}</small></div><div class="meter"><i style="width:${w}%"></i></div>${acts?`<div class="acts">
+  <button class="btn sm" data-in="${p.id}">+ ${t("in")}</button><button class="btn sm alt" data-out="${p.id}">− ${t("outb")}</button>
+  <button class="btn sm alt" data-edit="${p.id}">${t("editb")}</button><button class="btn sm alt" data-del="${p.id}">${t("del")}</button></div>`:""}</div>`;
+}
+function txRow(x){
+  return `<div class="row"><div><div class="nm">${esc(x.name)}</div><div class="sub">${fmt(x.t)}</div></div>
+  <div class="q ${x.type==="in"?"tx-in":"tx-out"}">${x.type==="in"?"+":"−"}${x.qty} <small>→ ${x.after}</small></div></div>`;
+}
+function view(){
+  const lowL=S.products.filter(p=>st(p)!=="ok").sort((a,b)=>a.qty-b.qty);
+  if(tab==="dash"){
+    const o=S.products.filter(p=>st(p)==="out").length;
+    return `<div class="stats"><div class="stat"><b>${S.products.length}</b><span>${t("total")}</span></div>
+    <div class="stat low"><b>${lowL.length-o}</b><span>${t("low")}</span></div><div class="stat out"><b>${o}</b><span>${t("out")}</span></div></div>
+    <h2>${t("reorder")}</h2><div class="card alerts">${lowL.length?lowL.map(p=>row(p,false)).join(""):`<div class="empty">${t("ok")}</div>`}</div>
+    <h2>${t("recent")}</h2><div class="card">${S.tx.length?S.tx.slice(0,5).map(txRow).join(""):`<div class="empty">${t("nohist")}</div>`}</div>`;
+  }
+  if(tab==="prods"){
+    const f=S.products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()));
+    return `<div class="bar"><input id="q" type="search" placeholder="${t("search")}" value="${esc(q)}" aria-label="${t("search")}"><button class="btn" id="addp">+ ${t("add")}</button></div>
+    <div class="card">${f.length?f.map(p=>row(p,true)).join(""):`<div class="empty">${t("empty")}</div>`}</div>`;
+  }
+  return `<div class="card">${S.tx.length?S.tx.slice(0,100).map(txRow).join(""):`<div class="empty">${t("nohist")}</div>`}</div>`;
+}
+function render(){
+  document.documentElement.lang=lang?"hi":"en";
+  if(!authed){
+    $("#app").innerHTML=`<div id="login"><h1>Kirana Stock</h1><p>${pin?t("enterpin"):t("setpin")}</p>
+    <input id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="PIN"><div class="err" id="le"></div>
+    <button class="btn" id="lb" style="width:100%;margin-top:8px">${t("login")}</button>
+    <button class="link" id="ll">${lang?"English":"हिंदी"}</button></div>`;
+    $("#pin").focus();return;
+  }
+  const keepQ=document.activeElement&&document.activeElement.id==="q";
+  $("#app").innerHTML=`<div class="wrap"><header><h1>${t("store")}<small>${t(tab)}</small></h1>
+  <button class="chip" id="ll">${lang?"English":"हिंदी"}</button><button class="chip" id="lo">${t("logout")}</button></header>
+  ${view()}${tab==="prods"?`<button class="link" id="rs">${t("reset")}</button>`:""}</div>
+  <nav>${["dash","prods","hist"].map(k=>`<button data-tab="${k}" ${tab===k?'aria-current="page"':""}>${t(k)}</button>`).join("")}</nav>`;
+  if(keepQ){const i=$("#q");i.focus();i.setSelectionRange(q.length,q.length)}
+}
+function tr(){document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t))}
+
+function login(){
+  const v=$("#pin").value;
+  if(!/^\d{4}$/.test(v)){$("#le").textContent=t("badpin");return}
+  if(!pin){pin=v;wr(P,pin)}else if(v!==pin){$("#le").textContent=t("wrong");$("#pin").value="";return}
+  authed=true;render();
+}
+function openP(id){
+  editId=id;const p=S.products.find(x=>x.id===id);tr();
+  $("#pdt").textContent=t(p?"edit":"add");
+  $("#pn").value=p?p.name:"";$("#pc").value=p?p.cat:"Grocery";$("#pu").value=p?p.unit:"Packet";
+  $("#pq").value=p?p.qty:0;$("#pr").value=p?p.reorder:5;$("#pe").textContent="";$("#pd").showModal();
+}
+function saveP(){
+  const n=$("#pn").value.trim(),qv=parseInt($("#pq").value,10),r=parseInt($("#pr").value,10);
+  if(!n){$("#pe").textContent=t("needname");return}
+  if(isNaN(qv)||isNaN(r)||qv<0||r<0){$("#pe").textContent=t("needlvl");return}
+  const o={name:n,cat:$("#pc").value,unit:$("#pu").value,qty:qv,reorder:r};
+  if(editId){Object.assign(S.products.find(x=>x.id===editId),o)}else{S.products.push({id:S.next++,...o})}
+  save();$("#pd").close();render();
+}
+function openS(id,type){
+  stockId=id;stockType=type;const p=S.products.find(x=>x.id===id);tr();
+  $("#sdt").textContent=p.name;$("#sds").textContent=`${p.qty} ${p.unit} ${t("left")}`;
+  setType(type);$("#sq").value="";$("#se").textContent="";$("#sd").showModal();$("#sq").focus();
+}
+function setType(ty){stockType=ty;$("#bin").setAttribute("aria-pressed",ty==="in");$("#bout").setAttribute("aria-pressed",ty==="out")}
+function saveS(){
+  const n=parseInt($("#sq").value,10),p=S.products.find(x=>x.id===stockId);
+  if(isNaN(n)||n<1){$("#se").textContent=t("needqty");return}
+  if(stockType==="out"&&n>p.qty){$("#se").textContent=`${t("notenough")} ${p.qty}`;return}
+  p.qty+=stockType==="in"?n:-n;
+  S.tx.unshift({t:Date.now(),pid:p.id,name:p.name,type:stockType,qty:n,after:p.qty});
+  save();$("#sd").close();render();
+}
+
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  const d=b.dataset;
+  if(b.id==="lb")return login();
+  if(b.id==="ll"){lang=lang?0:1;wr(L,lang);return render()}
+  if(b.id==="lo"){authed=false;return render()}
+  if(d.tab){tab=d.tab;return render()}
+  if(b.id==="addp")return openP(null);
+  if(d.edit)return openP(+d.edit);
+  if(d.in)return openS(+d.in,"in");
+  if(d.out)return openS(+d.out,"out");
+  if(d.del){if(confirm(t("cdel"))){S.products=S.products.filter(x=>x.id!==+d.del);save();render()}return}
+  if(b.id==="rs"){if(confirm(t("creset"))){S={products:[],tx:[],next:1};save();render()}return}
+  if(b.id==="ps")return saveP();
+  if(b.id==="ss")return saveS();
+  if(b.id==="bin")return setType("in");
+  if(b.id==="bout")return setType("out");
+  if(d.close!==undefined)b.closest("dialog").close();
+});
+document.addEventListener("input",e=>{if(e.target.id==="q"){q=e.target.value;render()}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"){if(e.target.id==="pin")login();else if(e.target.id==="sq")saveS()}});
+render();
+</script>
+</body>
+</html>
